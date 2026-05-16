@@ -40,6 +40,7 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
         email=body.email,
         name=body.name,
         password=body.password,
+        district_id=body.district_id,
     )
     return tokens
 

@@ -12,6 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
+from app.models.district import SchoolDistrict
 from app.core.security import (
     hash_password,
     verify_password,
@@ -27,6 +28,7 @@ async def register_user(
     email: str,
     name: str,
     password: str,
+    district_id: str | None = None,
 ) -> dict:
     """
     Create a new user account.
@@ -37,10 +39,19 @@ async def register_user(
     if existing.scalar_one_or_none():
         raise ConflictException("An account with this email already exists")
 
+    # Validate district_id if provided
+    if district_id:
+        district = await db.execute(
+            select(SchoolDistrict).where(SchoolDistrict.id == district_id)
+        )
+        if not district.scalar_one_or_none():
+            raise BadRequestException("Invalid district_id — district not found")
+
     user = User(
         email=email,
         name=name,
         hashed_password=hash_password(password),
+        district_id=district_id,
         last_active=datetime.now(timezone.utc),
     )
     db.add(user)

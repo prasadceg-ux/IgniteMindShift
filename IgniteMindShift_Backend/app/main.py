@@ -11,11 +11,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.core.database import init_db, close_db
+from app.core.database import close_db, async_session_factory
 from app.api.v1.router import v1_router
 from app.schemas.common import HealthCheck
+from app.utils.seed_districts import seed_districts
 
-# Import all models so they register with Base.metadata before init_db()
+# Import unrouted models so they register with Base.metadata (for Alembic autogenerate)
 import app.models.user          # noqa: F401
 import app.models.course        # noqa: F401
 import app.models.progress      # noqa: F401
@@ -33,9 +34,9 @@ import app.models.notification  # noqa: F401
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: create all tables (SQLite auto-creates the file)
-    await init_db()
-    print(f"✓ Database initialized ({settings.DATABASE_URL.split('://')[0]})")
+    async with async_session_factory() as db:
+        await seed_districts(db)
+        await db.commit()
     yield
     # Shutdown: clean up connections
     await close_db()

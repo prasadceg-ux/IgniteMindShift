@@ -38,6 +38,14 @@ class User(Base):
     longest_streak: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     last_activity_date: Mapped[date | None] = mapped_column(Date, nullable=True)
 
+    # School district
+    district_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("school_districts.id"), nullable=True, index=True
+    )
+    district: Mapped["SchoolDistrict | None"] = relationship(  # type: ignore[name-defined]
+        "SchoolDistrict", back_populates="users", lazy="selectin"
+    )
+
     # Preferences
     dark_mode: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     locale: Mapped[str] = mapped_column(String(10), nullable=False, default="en")
