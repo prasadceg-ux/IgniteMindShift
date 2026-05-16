@@ -10,11 +10,19 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from alembic.config import Config
+from alembic import command
+
 from app.config import settings
 from app.core.database import close_db, async_session_factory
 from app.api.v1.router import v1_router
 from app.schemas.common import HealthCheck
 from app.utils.seed_districts import seed_districts
+
+
+def run_migrations() -> None:
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
 
 # Import unrouted models so they register with Base.metadata (for Alembic autogenerate)
 import app.models.user          # noqa: F401
@@ -34,6 +42,7 @@ import app.models.notification  # noqa: F401
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    run_migrations()
     async with async_session_factory() as db:
         await seed_districts(db)
         await db.commit()
