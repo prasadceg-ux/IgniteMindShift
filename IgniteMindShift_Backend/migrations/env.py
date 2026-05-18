@@ -11,6 +11,7 @@ from app.config import settings
 
 # Register all models so autogenerate detects every table
 import app.models.district      # noqa: F401
+import app.models.school        # noqa: F401
 import app.models.user          # noqa: F401
 import app.models.course        # noqa: F401
 import app.models.progress      # noqa: F401

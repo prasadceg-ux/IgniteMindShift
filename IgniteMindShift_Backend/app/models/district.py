@@ -19,4 +19,5 @@ class SchoolDistrict(Base):
     state: Mapped[str | None] = mapped_column(String(2), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
-    users: Mapped[list["User"]] = relationship(back_populates="district")
+    users: Mapped[list["User"]] = relationship(back_populates="district")  # type: ignore[name-defined]
+    schools: Mapped[list["School"]] = relationship(back_populates="district")  # type: ignore[name-defined]

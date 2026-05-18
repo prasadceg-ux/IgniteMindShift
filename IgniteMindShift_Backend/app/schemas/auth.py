@@ -9,6 +9,7 @@ class RegisterRequest(BaseModel):
     name: str = Field(..., min_length=2, max_length=150)
     password: str = Field(..., min_length=8, max_length=128)
     district_id: Optional[str] = None
+    school_id: Optional[str] = None
 
 
 class LoginRequest(BaseModel):

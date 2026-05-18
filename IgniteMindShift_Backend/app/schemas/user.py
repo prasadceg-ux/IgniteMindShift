@@ -13,6 +13,13 @@ class DistrictInfo(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class SchoolInfo(BaseModel):
+    id: str
+    name: str
+
+    model_config = {"from_attributes": True}
+
+
 class UserProfile(BaseModel):
     """Full profile returned to the authenticated user."""
     id: str
@@ -23,6 +30,8 @@ class UserProfile(BaseModel):
     role: str
     district_id: Optional[str] = None
     district: Optional[DistrictInfo] = None
+    school_id: Optional[str] = None
+    school: Optional[SchoolInfo] = None
     xp_points: int
     level: int
     streak_count: int
@@ -56,3 +65,4 @@ class UserUpdate(BaseModel):
     dark_mode: Optional[bool] = None
     locale: Optional[str] = Field(None, max_length=10)
     district_id: Optional[str] = None
+    school_id: Optional[str] = None

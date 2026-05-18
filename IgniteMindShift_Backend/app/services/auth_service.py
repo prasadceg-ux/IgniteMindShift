@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.models.district import SchoolDistrict
+from app.models.school import School
 from app.core.security import (
     hash_password,
     verify_password,
@@ -29,6 +30,7 @@ async def register_user(
     name: str,
     password: str,
     district_id: str | None = None,
+    school_id: str | None = None,
 ) -> dict:
     """
     Create a new user account.
@@ -47,11 +49,21 @@ async def register_user(
         if not district.scalar_one_or_none():
             raise BadRequestException("Invalid district_id — district not found")
 
+    # Validate school_id if provided, and ensure it belongs to the given district
+    if school_id:
+        school_result = await db.execute(select(School).where(School.id == school_id))
+        school = school_result.scalar_one_or_none()
+        if not school:
+            raise BadRequestException("Invalid school_id — school not found")
+        if district_id and school.district_id != district_id:
+            raise BadRequestException("school_id does not belong to the selected district")
+
     user = User(
         email=email,
         name=name,
         hashed_password=hash_password(password),
         district_id=district_id,
+        school_id=school_id,
         last_active=datetime.now(timezone.utc),
     )
     db.add(user)

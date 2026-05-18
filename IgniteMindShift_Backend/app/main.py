@@ -15,6 +15,7 @@ from app.core.database import close_db, async_session_factory
 from app.api.v1.router import v1_router
 from app.schemas.common import HealthCheck
 from app.utils.seed_districts import seed_districts
+from app.utils.seed_schools import seed_schools
 
 
 # Import unrouted models so they register with Base.metadata (for Alembic autogenerate)
@@ -37,6 +38,7 @@ import app.models.notification  # noqa: F401
 async def lifespan(app: FastAPI):
     async with async_session_factory() as db:
         await seed_districts(db)
+        await seed_schools(db)
         await db.commit()
     yield
     # Shutdown: clean up connections
