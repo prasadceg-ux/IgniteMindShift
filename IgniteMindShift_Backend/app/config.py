@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8082"]
+    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8082" , "http://localhost:8083"]
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
